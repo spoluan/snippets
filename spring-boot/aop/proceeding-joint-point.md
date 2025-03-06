@@ -84,7 +84,7 @@ public Object aroundHelloServiceMethod(ProceedingJoinPoint joinPoint) throws Thr
 Assume the `HelloService` class:
 
 ```java
-package programmerzamannow.aop.service;
+package com.aop.service;
 
 import org.springframework.stereotype.Service;
 
@@ -120,7 +120,7 @@ public void greetUser() {
 1. **Before Execution**:
    Logs:
    ```
-   Around Before programmerzamannow.aop.service.HelloService.sayHello()
+   Around Before com.aop.service.HelloService.sayHello()
    ```
 
 2. **Method Execution**:
@@ -130,7 +130,7 @@ public void greetUser() {
 3. **Finally Block**:
    Logs:
    ```
-   Around Finally programmerzamannow.aop.service.HelloService.sayHello()
+   Around Finally com.aop.service.HelloService.sayHello()
    ```
 
 ---
