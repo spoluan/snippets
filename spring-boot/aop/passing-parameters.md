@@ -9,7 +9,7 @@ In Spring AOP, you can capture method parameters and use them in your advice by 
 #### **1. Pointcut Definition**
 
 ```java
-@Pointcut("execution(* programmerzamannow.aop.service.HelloService.*(java.lang.String))")
+@Pointcut("execution(* com.aop.service.HelloService.*(java.lang.String))")
 public void pointcutHelloServiceStringParam() {}
 ```
 
@@ -19,9 +19,9 @@ public void pointcutHelloServiceStringParam() {}
   
 - **Key Points**:
   - `execution`: Targets method execution.
-  - `* programmerzamannow.aop.service.HelloService.*(java.lang.String)`:
+  - `* com.aop.service.HelloService.*(java.lang.String)`:
     - `*`: Matches any return type.
-    - `programmerzamannow.aop.service.HelloService`: The target class.
+    - `com.aop.service.HelloService`: The target class.
     - `.*`: Matches any method name.
     - `(java.lang.String)`: Matches methods with a single `String` parameter.
 
@@ -67,7 +67,7 @@ public void logStringParameter(String name) {
 
 #### **Target Class: `HelloService`**
 ```java
-package programmerzamannow.aop.service;
+package com.aop.service;
 
 public class HelloService {
     public void sayHello(String name) {
@@ -82,7 +82,7 @@ public class HelloService {
 @Component
 public class LoggingAspect {
 
-    @Pointcut("execution(* programmerzamannow.aop.service.HelloService.*(java.lang.String))")
+    @Pointcut("execution(* com.aop.service.HelloService.*(java.lang.String))")
     public void pointcutHelloServiceStringParam() {}
 
     @Before("pointcutHelloServiceStringParam() && args(name)")
@@ -138,7 +138,7 @@ helloService.sayHello("John");
 
 #### **Pointcut and Advice**
 ```java
-@Pointcut("execution(* programmerzamannow.aop.service.HelloService.*(..))")
+@Pointcut("execution(* com.aop.service.HelloService.*(..))")
 public void pointcutHelloService() {}
 
 @Before("pointcutHelloService() && args(name, age)")
