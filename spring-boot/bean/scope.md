@@ -1,18 +1,21 @@
+ 
 
-# **1. What Are Bean Scopes?**
+---
+
+## **1. What Are Bean Scopes?**
 
 A **bean scope** defines how a bean is created, shared, and managed in a Spring application. Spring provides several built-in scopes, and you can also define custom scopes if needed.
 
 ---
 
-# **2. Types of Bean Scopes**
+## **2. Types of Bean Scopes**
 
-## **A. Singleton Scope (Default)**
+### **A. Singleton Scope (Default)**
 
 - **Definition:** A single instance of the bean is created and shared across the entire Spring application context.
 - **Use Case:** Use for stateless beans or beans that are shared across the application (e.g., services, repositories).
 
-### **Example**
+#### **Example**
 ```java
 @Configuration
 public class AppConfig {
@@ -23,7 +26,7 @@ public class AppConfig {
 }
 ```
 
-### **Usage**
+#### **Usage**
 ```java
 Foo foo1 = context.getBean(Foo.class);
 Foo foo2 = context.getBean(Foo.class);
@@ -35,12 +38,12 @@ System.out.println(foo1 == foo2); // true (same instance)
 
 ---
 
-## **B. Prototype Scope**
+### **B. Prototype Scope**
 
 - **Definition:** A new instance of the bean is created each time it is requested.
 - **Use Case:** Use for stateful beans or beans that need to maintain their own state (e.g., non-thread-safe objects).
 
-### **Example**
+#### **Example**
 ```java
 @Configuration
 public class AppConfig {
@@ -52,7 +55,7 @@ public class AppConfig {
 }
 ```
 
-### **Usage**
+#### **Usage**
 ```java
 Foo foo1 = context.getBean(Foo.class);
 Foo foo2 = context.getBean(Foo.class);
@@ -64,12 +67,12 @@ System.out.println(foo1 == foo2); // false (different instances)
 
 ---
 
-## **C. Request Scope (Web Applications Only)**
+### **C. Request Scope (Web Applications Only)**
 
 - **Definition:** A new instance of the bean is created for each HTTP request.
 - **Use Case:** Use for request-specific data, such as user session details or request metadata.
 
-### **Example**
+#### **Example**
 ```java
 @Component
 @Scope("request")
@@ -78,7 +81,7 @@ public class RequestScopedBean {
 }
 ```
 
-### **Usage**
+#### **Usage**
 In a web application, you can inject this bean into a controller:
 ```java
 @RestController
@@ -98,12 +101,12 @@ public class MyController {
 
 ---
 
-## **D. Session Scope (Web Applications Only)**
+### **D. Session Scope (Web Applications Only)**
 
 - **Definition:** A single instance of the bean is created and shared within an HTTP session.
 - **Use Case:** Use for session-specific data, such as user preferences or shopping cart details.
 
-### **Example**
+#### **Example**
 ```java
 @Component
 @Scope("session")
@@ -112,7 +115,7 @@ public class SessionScopedBean {
 }
 ```
 
-### **Usage**
+#### **Usage**
 In a web application:
 ```java
 @RestController
@@ -132,12 +135,12 @@ public class MyController {
 
 ---
 
-## **E. Application Scope (Web Applications Only)**
+### **E. Application Scope (Web Applications Only)**
 
 - **Definition:** A single instance of the bean is created and shared across the entire ServletContext.
 - **Use Case:** Use for global data that needs to be shared across the application (e.g., application-wide settings).
 
-### **Example**
+#### **Example**
 ```java
 @Component
 @Scope("application")
@@ -146,7 +149,7 @@ public class ApplicationScopedBean {
 }
 ```
 
-### **Usage**
+#### **Usage**
 ```java
 @RestController
 public class MyController {
@@ -165,12 +168,13 @@ public class MyController {
 
 ---
 
-## **F. Custom Scope**
+### **F. Custom Scope**
 
 - **Definition:** You can define your own custom scope to handle specific lifecycle requirements.
 - **Use Case:** Use when none of the built-in scopes fit your requirements.
 
-### **Example**
+#### **Example**
+
 1. **Define a Custom Scope**
 ```java
 public class CustomScope implements Scope {
@@ -228,23 +232,129 @@ public class AppConfig {
 
 ---
 
-# **3. Summary of Scopes**
+## **3. Custom Scope Example: Doubleton Scope**
 
-| Scope          | Description                                                                 | Use Case                               |
-|-----------------|-----------------------------------------------------------------------------|----------------------------------------|
-| **Singleton**   | Single instance shared across the entire Spring context.                   | Stateless services, repositories.      |
-| **Prototype**   | New instance created for each request.                                     | Stateful or non-thread-safe objects.   |
-| **Request**     | New instance created for each HTTP request (web apps only).                | Request-specific data.                 |
-| **Session**     | Single instance per HTTP session (web apps only).                          | User-specific data (e.g., shopping cart). |
-| **Application** | Single instance shared across the entire ServletContext (web apps only).   | Application-wide settings.             |
-| **Custom**      | Custom-defined lifecycle and behavior.                                     | Special use cases.                     |
+### **What Is Doubleton Scope?**
+In a **Doubleton Scope**, there are exactly **two instances of the bean** created and managed by the scope. Each time the bean is requested, the scope alternates between these two instances in a round-robin fashion.
 
 ---
 
-# **4. Choosing the Right Scope**
+### **Implementation**
 
-- Use **singleton** for most beans, especially stateless ones.
-- Use **prototype** for stateful beans that need unique instances.
-- Use **request** or **session** for web-specific beans.
-- Use **application** for global shared data in web applications.
-- Define **custom scopes** for advanced or specific lifecycle management.
+#### **1. Doubleton Scope Logic**
+
+The `get` method alternates between two instances of the bean:
+```java
+@Override
+public Object get(String name, ObjectFactory<?> objectFactory) {
+    counter++;
+    if (objects.size() == 2) {
+        return objects.get(counter % 2); // Return one of the two instances
+    } else {
+        Object object = objectFactory.getObject();
+        objects.add(object); // Add a new instance if fewer than two exist
+        return object;
+    }
+}
+```
+
+The `remove` method ensures proper cleanup:
+```java
+@Override
+public Object remove(String name) {
+    if (objects.size() != 0) {
+        return objects.remove(0); // Remove the first instance
+    }
+    return null;
+}
+```
+
+#### **2. Complete Doubleton Scope Implementation**
+```java
+import org.springframework.beans.factory.ObjectFactory;
+import org.springframework.beans.factory.config.Scope;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class DoubletonScope implements Scope {
+
+    private final List<Object> objects = new ArrayList<>();
+    private int counter = -1;
+
+    @Override
+    public Object get(String name, ObjectFactory<?> objectFactory) {
+        counter++;
+        if (objects.size() == 2) {
+            return objects.get(counter % 2);
+        } else {
+            Object object = objectFactory.getObject();
+            objects.add(object);
+            return object;
+        }
+    }
+
+    @Override
+    public Object remove(String name) {
+        if (objects.size() != 0) {
+            return objects.remove(0);
+        }
+        return null;
+    }
+
+    @Override
+    public void registerDestructionCallback(String name, Runnable callback) {}
+
+    @Override
+    public Object resolveContextualObject(String key) {
+        return null;
+    }
+
+    @Override
+    public String getConversationId() {
+        return "doubleton";
+    }
+}
+```
+
+---
+
+#### **3. Registering the Doubleton Scope**
+```java
+@Configuration
+public class AppConfig {
+
+    @Bean
+    public static CustomScopeConfigurer customScopeConfigurer() {
+        CustomScopeConfigurer configurer = new CustomScopeConfigurer();
+        configurer.addScope("doubleton", new DoubletonScope());
+        return configurer;
+    }
+
+    @Bean
+    @Scope("doubleton")
+    public Foo foo() {
+        return new Foo();
+    }
+}
+```
+
+---
+
+#### **4. Testing the Doubleton Scope**
+```java
+public class Main {
+    public static void main(String[] args) {
+        ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+
+        Foo foo1 = context.getBean(Foo.class);
+        Foo foo2 = context.getBean(Foo.class);
+        Foo foo3 = context.getBean(Foo.class);
+
+        System.out.println(foo1); // Instance 1
+        System.out.println(foo2); // Instance 2
+        System.out.println(foo3); // Instance 1 (round-robin)
+    }
+}
+```
+ 
