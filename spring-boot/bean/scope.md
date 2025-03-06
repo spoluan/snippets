@@ -1,0 +1,250 @@
+
+# **1. What Are Bean Scopes?**
+
+A **bean scope** defines how a bean is created, shared, and managed in a Spring application. Spring provides several built-in scopes, and you can also define custom scopes if needed.
+
+---
+
+# **2. Types of Bean Scopes**
+
+## **A. Singleton Scope (Default)**
+
+- **Definition:** A single instance of the bean is created and shared across the entire Spring application context.
+- **Use Case:** Use for stateless beans or beans that are shared across the application (e.g., services, repositories).
+
+### **Example**
+```java
+@Configuration
+public class AppConfig {
+    @Bean
+    public Foo foo() {
+        return new Foo();
+    }
+}
+```
+
+### **Usage**
+```java
+Foo foo1 = context.getBean(Foo.class);
+Foo foo2 = context.getBean(Foo.class);
+
+System.out.println(foo1 == foo2); // true (same instance)
+```
+
+- **Key Point:** The same instance of `Foo` is returned every time it is requested.
+
+---
+
+## **B. Prototype Scope**
+
+- **Definition:** A new instance of the bean is created each time it is requested.
+- **Use Case:** Use for stateful beans or beans that need to maintain their own state (e.g., non-thread-safe objects).
+
+### **Example**
+```java
+@Configuration
+public class AppConfig {
+    @Bean
+    @Scope("prototype")
+    public Foo foo() {
+        return new Foo();
+    }
+}
+```
+
+### **Usage**
+```java
+Foo foo1 = context.getBean(Foo.class);
+Foo foo2 = context.getBean(Foo.class);
+
+System.out.println(foo1 == foo2); // false (different instances)
+```
+
+- **Key Point:** Each request for the `Foo` bean results in a new instance.
+
+---
+
+## **C. Request Scope (Web Applications Only)**
+
+- **Definition:** A new instance of the bean is created for each HTTP request.
+- **Use Case:** Use for request-specific data, such as user session details or request metadata.
+
+### **Example**
+```java
+@Component
+@Scope("request")
+public class RequestScopedBean {
+    // Fields and methods specific to a single HTTP request
+}
+```
+
+### **Usage**
+In a web application, you can inject this bean into a controller:
+```java
+@RestController
+public class MyController {
+
+    @Autowired
+    private RequestScopedBean requestScopedBean;
+
+    @GetMapping("/test")
+    public String testScope() {
+        return "Request Scoped Bean: " + requestScopedBean.toString();
+    }
+}
+```
+
+- **Key Point:** A new instance is created for every HTTP request, and it is destroyed after the request is processed.
+
+---
+
+## **D. Session Scope (Web Applications Only)**
+
+- **Definition:** A single instance of the bean is created and shared within an HTTP session.
+- **Use Case:** Use for session-specific data, such as user preferences or shopping cart details.
+
+### **Example**
+```java
+@Component
+@Scope("session")
+public class SessionScopedBean {
+    // Fields and methods specific to an HTTP session
+}
+```
+
+### **Usage**
+In a web application:
+```java
+@RestController
+public class MyController {
+
+    @Autowired
+    private SessionScopedBean sessionScopedBean;
+
+    @GetMapping("/session")
+    public String testScope() {
+        return "Session Scoped Bean: " + sessionScopedBean.toString();
+    }
+}
+```
+
+- **Key Point:** The bean instance is tied to the user session and is destroyed when the session ends.
+
+---
+
+## **E. Application Scope (Web Applications Only)**
+
+- **Definition:** A single instance of the bean is created and shared across the entire ServletContext.
+- **Use Case:** Use for global data that needs to be shared across the application (e.g., application-wide settings).
+
+### **Example**
+```java
+@Component
+@Scope("application")
+public class ApplicationScopedBean {
+    // Fields and methods shared across the application
+}
+```
+
+### **Usage**
+```java
+@RestController
+public class MyController {
+
+    @Autowired
+    private ApplicationScopedBean applicationScopedBean;
+
+    @GetMapping("/app")
+    public String testScope() {
+        return "Application Scoped Bean: " + applicationScopedBean.toString();
+    }
+}
+```
+
+- **Key Point:** The bean instance is shared across all requests and sessions within the application.
+
+---
+
+## **F. Custom Scope**
+
+- **Definition:** You can define your own custom scope to handle specific lifecycle requirements.
+- **Use Case:** Use when none of the built-in scopes fit your requirements.
+
+### **Example**
+1. **Define a Custom Scope**
+```java
+public class CustomScope implements Scope {
+
+    private Map<String, Object> scopedObjects = new HashMap<>();
+
+    @Override
+    public Object get(String name, ObjectFactory<?> objectFactory) {
+        return scopedObjects.computeIfAbsent(name, k -> objectFactory.getObject());
+    }
+
+    @Override
+    public Object remove(String name) {
+        return scopedObjects.remove(name);
+    }
+
+    @Override
+    public void registerDestructionCallback(String name, Runnable callback) {
+        // Handle destruction callbacks if necessary
+    }
+
+    @Override
+    public Object resolveContextualObject(String key) {
+        return null;
+    }
+
+    @Override
+    public String getConversationId() {
+        return "custom";
+    }
+}
+```
+
+2. **Register the Custom Scope**
+```java
+@Configuration
+public class AppConfig {
+
+    @Bean
+    public static CustomScopeConfigurer customScopeConfigurer() {
+        CustomScopeConfigurer configurer = new CustomScopeConfigurer();
+        configurer.addScope("custom", new CustomScope());
+        return configurer;
+    }
+
+    @Bean
+    @Scope("custom")
+    public Foo foo() {
+        return new Foo();
+    }
+}
+```
+
+- **Key Point:** Custom scopes allow you to manage the lifecycle of beans in a way that fits your specific needs.
+
+---
+
+# **3. Summary of Scopes**
+
+| Scope          | Description                                                                 | Use Case                               |
+|-----------------|-----------------------------------------------------------------------------|----------------------------------------|
+| **Singleton**   | Single instance shared across the entire Spring context.                   | Stateless services, repositories.      |
+| **Prototype**   | New instance created for each request.                                     | Stateful or non-thread-safe objects.   |
+| **Request**     | New instance created for each HTTP request (web apps only).                | Request-specific data.                 |
+| **Session**     | Single instance per HTTP session (web apps only).                          | User-specific data (e.g., shopping cart). |
+| **Application** | Single instance shared across the entire ServletContext (web apps only).   | Application-wide settings.             |
+| **Custom**      | Custom-defined lifecycle and behavior.                                     | Special use cases.                     |
+
+---
+
+# **4. Choosing the Right Scope**
+
+- Use **singleton** for most beans, especially stateless ones.
+- Use **prototype** for stateful beans that need unique instances.
+- Use **request** or **session** for web-specific beans.
+- Use **application** for global shared data in web applications.
+- Define **custom scopes** for advanced or specific lifecycle management.
