@@ -1,3 +1,4 @@
+ 
 
 ### **Introduction to Properties Files in Spring Boot**
 
@@ -59,6 +60,17 @@ Profiles can be activated in multiple ways:
    java -Dspring.profiles.active=production -jar your-app.jar
    ```
 
+4. **In Tests Using `@ActiveProfiles`**:
+   - You can explicitly set active profiles in your test classes using the `@ActiveProfiles` annotation:
+     ```java
+     @SpringBootTest
+     @ActiveProfiles({"production", "test"})
+     public class MyServiceTest {
+         // Test code here
+     }
+     ```
+   - This ensures that the specified profiles (`production` and `test`) are active during the test execution.
+
 ---
 
 ### **Example Properties Files**
@@ -118,6 +130,23 @@ public static class TestApplication {
 3. **Dynamic Behavior**:
    - When a specific profile is active, the corresponding property file is loaded, and the respective values are injected.
 
+4. **Testing Active Profiles**:
+   - The `@ActiveProfiles` annotation can be used in test classes to ensure that specific profiles are active during testing. For example:
+     ```java
+     @SpringBootTest
+     @ActiveProfiles({"production", "test"})
+     public class MyServiceTest {
+         @Autowired
+         private ProfileProperties profileProperties;
+
+         @Test
+         public void testActiveProfiles() {
+             assertEquals("production-file.txt", profileProperties.getProductionFile());
+             assertEquals("test-file.txt", profileProperties.getTestFile());
+         }
+     }
+     ```
+
 ---
 
 ### **Example Scenarios**
@@ -157,6 +186,18 @@ public static class TestApplication {
   testFile = "test-file.txt"; // From application-test.properties
   ```
 
+#### **Scenario 4: Multiple Profiles in Tests**
+- Active profiles: `production` and `test` (via `@ActiveProfiles`).
+- Properties loaded:
+  - From `application.properties`.
+  - Overridden by `application-production.properties` and `application-test.properties`.
+- Values:
+  ```java
+  defaultFile = "default-file.txt"; // From application.properties
+  productionFile = "production-file.txt"; // From application-production.properties
+  testFile = "test-file.txt"; // From application-test.properties
+  ```
+
 ---
 
 ### **Best Practices**
@@ -179,6 +220,8 @@ public static class TestApplication {
      }
      ```
 
-5. **Externalize Configurations**:
-   - Use externalized properties files or environment variables for deployment flexibility.
+5. **Use `@ActiveProfiles` for Testing**:
+   - Use `@ActiveProfiles` to explicitly activate profiles in test scenarios to ensure the correct configuration is loaded.
 
+6. **Externalize Configurations**:
+   - Use externalized properties files or environment variables for deployment flexibility.
