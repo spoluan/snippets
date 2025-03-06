@@ -1,9 +1,3 @@
-### **Using JDBC for Database Management in PostgreSQL with Spring Boot**
-
-Yes, you can absolutely use **JDBC (Java Database Connectivity)** to manage a PostgreSQL database in a Spring Boot application. While Spring Boot provides higher-level abstractions like JPA (Java Persistence API) and Spring Data, JDBC is still widely used for direct database access when you need fine-grained control or want to avoid the overhead of ORM frameworks.
-
----
-
 ### **Introduction to JDBC in Spring Boot**
 
 **JDBC (Java Database Connectivity)** is a low-level API in Java that allows you to interact with relational databases. In Spring Boot, you can use the `JdbcTemplate` class, which simplifies working with JDBC by handling boilerplate code such as establishing connections, executing queries, and closing resources.
