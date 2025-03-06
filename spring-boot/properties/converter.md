@@ -387,3 +387,294 @@ public class GenericStringToObjectConverter implements GenericConverter {
 
 3. **Encapsulate Conversion Logic:**  
    Use `Converter` or `GenericConverter` for reusable and testable conversion logic.
+
+
+
+## **ConversionService in Spring**
+
+The **`ConversionService`** is a core Spring interface for type conversion. It is used internally by Spring to convert properties from one type to another during property binding, such as when mapping configuration properties to Java objects.
+
+### Why Register Converters with ConversionService?
+
+1. **Custom Converters:**  
+   If you create custom converters (e.g., for `@Value` injection or other use cases), they must be registered with the `ConversionService` to be recognized.
+
+2. **Global Converters:**  
+   You can register converters globally to make them available throughout the application.
+
+3. **Custom Use Cases:**  
+   For advanced scenarios where Spring’s default property binding is insufficient, you may need to customize the `ConversionService`.
+
+---
+
+## **How Spring Boot Handles Converters Automatically**
+
+Spring Boot simplifies the process of registering converters for `@ConfigurationProperties` by using the `@ConfigurationPropertiesBinding` annotation. This annotation tells Spring Boot to automatically register the converter with a dedicated `ConversionService` for configuration properties.
+
+However, for converters used outside `@ConfigurationProperties` (e.g., with `@Value`), you need to register them manually.
+
+---
+
+## **Registering Converters with ConversionService**
+
+### **1. Automatic Registration for `@ConfigurationProperties`**
+
+If you are using the `@ConfigurationPropertiesBinding` annotation, Spring Boot automatically registers the custom converter with the `ConversionService` used for configuration properties.
+
+#### Example: Automatic Registration
+```java
+import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.stereotype.Component;
+
+@Component
+@ConfigurationPropertiesBinding
+public class AddressConverter implements Converter<String, Address> {
+    @Override
+    public Address convert(String source) {
+        String[] parts = source.split(", ");
+        return new Address(parts[0], parts[1], parts[2]);
+    }
+}
+```
+
+No manual registration is needed in this case.
+
+---
+
+### **2. Manual Registration with a Custom ConversionService**
+
+If you want to use custom converters globally (e.g., for `@Value` injection or other use cases), you need to register them manually with the `ConversionService`.
+
+#### **Steps to Register a Custom Converter**
+
+1. **Create a Custom Converter**
+   ```java
+   import org.springframework.core.convert.converter.Converter;
+
+   public class StringToRangeConverter implements Converter<String, Range> {
+       @Override
+       public Range convert(String source) {
+           String[] parts = source.split("-");
+           return new Range(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]));
+       }
+   }
+   ```
+
+2. **Define a Custom ConversionService Bean**
+   ```java
+   import org.springframework.context.annotation.Bean;
+   import org.springframework.context.annotation.Configuration;
+   import org.springframework.core.convert.converter.Converter;
+   import org.springframework.format.support.DefaultFormattingConversionService;
+
+   @Configuration
+   public class ConversionServiceConfig {
+
+       @Bean
+       public DefaultFormattingConversionService conversionService() {
+           DefaultFormattingConversionService conversionService = new DefaultFormattingConversionService();
+           // Register custom converters
+           conversionService.addConverter(new StringToRangeConverter());
+           return conversionService;
+       }
+   }
+   ```
+
+3. **Using the Custom ConversionService**
+   Once registered, the `ConversionService` is used globally, including for `@Value` injection.
+
+   ##### Example:
+   ```java
+   import org.springframework.beans.factory.annotation.Value;
+   import org.springframework.stereotype.Component;
+
+   @Component
+   public class RangeConfig {
+
+       @Value("${app.range}")
+       private Range range;
+
+       public Range getRange() {
+           return range;
+       }
+   }
+   ```
+
+   ##### **application.properties**
+   ```properties
+   app.range=10-20
+   ```
+
+---
+
+### **3. Using Spring's Configurable ConversionService**
+
+If you want to customize the existing `ConversionService`, you can do so by overriding the default behavior.
+
+#### Example:
+```java
+import org.springframework.context.annotation.Configuration;
+import org.springframework.format.FormatterRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+@Configuration
+public class WebConfig implements WebMvcConfigurer {
+
+    @Override
+    public void addFormatters(FormatterRegistry registry) {
+        registry.addConverter(new StringToRangeConverter());
+    }
+}
+```
+
+This approach is useful for web-related conversions (e.g., when dealing with request parameters).
+
+---
+
+### **4. Using `ApplicationConversionService`**
+
+Spring Boot 2.0 introduced the `ApplicationConversionService`, which is the default `ConversionService` used by the framework. You can customize it by adding your custom converters.
+
+#### Example:
+```java
+import org.springframework.boot.convert.ApplicationConversionService;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class ConversionServiceConfig {
+
+    @Bean
+    public ApplicationConversionService applicationConversionService() {
+        ApplicationConversionService conversionService = new ApplicationConversionService();
+        conversionService.addConverter(new StringToRangeConverter());
+        return conversionService;
+    }
+}
+```
+
+---
+
+## **Complete Example: Custom Converter with Registration**
+
+Let’s put it all together into a single example.
+
+### **Scenario: Convert a String to a Custom Type (`Address`)**
+
+#### **application.properties**
+```properties
+app.address=123 Main St, Springfield, USA
+```
+
+#### **Custom Type**
+```java
+public class Address {
+    private String street;
+    private String city;
+    private String country;
+
+    public Address(String street, String city, String country) {
+        this.street = street;
+        this.city = city;
+        this.country = country;
+    }
+
+    // Getters and toString()
+    @Override
+    public String toString() {
+        return "Address{" +
+                "street='" + street + '\'' +
+                ", city='" + city + '\'' +
+                ", country='" + country + '\'' +
+                '}';
+    }
+}
+```
+
+#### **Custom Converter**
+```java
+import org.springframework.core.convert.converter.Converter;
+
+public class StringToAddressConverter implements Converter<String, Address> {
+    @Override
+    public Address convert(String source) {
+        String[] parts = source.split(", ");
+        return new Address(parts[0], parts[1], parts[2]);
+    }
+}
+```
+
+#### **Register the Converter**
+```java
+import org.springframework.boot.convert.ApplicationConversionService;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class ConversionServiceConfig {
+
+    @Bean
+    public ApplicationConversionService applicationConversionService() {
+        ApplicationConversionService conversionService = new ApplicationConversionService();
+        conversionService.addConverter(new StringToAddressConverter());
+        return conversionService;
+    }
+}
+```
+
+#### **Using the Converter**
+```java
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+@Component
+public class AddressConfig {
+
+    @Value("${app.address}")
+    private Address address;
+
+    public Address getAddress() {
+        return address;
+    }
+}
+```
+
+#### **Main Application**
+```java
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+
+@SpringBootApplication
+public class ConverterExampleApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(ConverterExampleApplication.class, args);
+    }
+
+    @Bean
+    CommandLineRunner run(AddressConfig addressConfig) {
+        return args -> {
+            System.out.println("Address: " + addressConfig.getAddress());
+        };
+    }
+}
+```
+
+---
+
+## **Output**
+```
+Address: Address{street='123 Main St', city='Springfield', country='USA'}
+```
+
+---
+
+## **Conclusion**
+
+1. **Default Conversions:** Spring Boot supports many types like `Duration`, `DataSize`, `Enum`, and more out of the box.
+2. **Custom Converters:** For custom types, you can create converters and register them with the `ConversionService`.
+3. **Automatic Registration:** Use `@ConfigurationPropertiesBinding` for automatic registration with `@ConfigurationProperties`.
+4. **Manual Registration:** For global or `@Value` use cases, register converters manually with the `ConversionService`. 
