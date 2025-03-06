@@ -101,6 +101,6 @@ public class AsyncConfig {
 ### **5. Documentation Reference**
 
 For more details, refer to the official Spring Boot documentation on thread pool configuration:  
-[Spring Boot Task Execution Properties](https://docs.spring.io/spring-boot/docs/current/reference/html/application-properties.html#application-properties.core.spring.task.execution)
+[Spring Boot Task Execution Properties](https://docs.spring.io/spring-boot/appendix/application-properties/index.html#application-properties.core.spring.task.execution.pool.allow-core-thread-timeout)
 
  
