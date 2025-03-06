@@ -312,3 +312,217 @@ Here’s what you might see when you build the project with Maven and the `sprin
        private boolean productionMode;
    }
    ```
+ 
+### **Introduction to `@ConfigurationProperties` and Why It Needs to Be Enabled**
+
+In Spring Boot, the `@ConfigurationProperties` annotation is used to map external configuration (like properties from `application.properties` or `application.yml`) to a Java class. This makes it easier to manage and access application settings in a type-safe way.
+
+However, **`@ConfigurationProperties` alone does not work by itself**. For it to function, you must explicitly enable it. This can be done in one of two ways:
+1. By using the `@EnableConfigurationProperties` annotation.
+2. By annotating the class with `@Component` (or another Spring stereotype annotation).
+
+The recommended way is to use `@EnableConfigurationProperties`, as it provides better modularity and separation of concerns.
+
+---
+
+### **Why Do We Need to Enable `@ConfigurationProperties`?**
+
+The `@ConfigurationProperties` annotation is just a marker that tells Spring Boot to bind external properties to the fields of the class. But Spring Boot needs to know **how to manage this class as a bean**. Without enabling it explicitly, Spring won't recognize it as a bean, and the binding won't happen.
+
+This is why you must either:
+- Use `@EnableConfigurationProperties` to explicitly register the class as a bean.
+- Or annotate the class with `@Component` to let Spring Boot automatically detect it.
+
+---
+
+### **Step-by-Step Guide with Examples**
+
+#### **1. Using `@EnableConfigurationProperties` (Recommended Approach)**
+
+This approach explicitly registers the `@ConfigurationProperties` class as a Spring bean, keeping your configuration classes focused on property binding.
+
+---
+
+**Step 1**: Create a Configuration Properties Class
+
+Define a class annotated with `@ConfigurationProperties`. Use the `prefix` attribute to specify the namespace for the properties.
+
+```java
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
+@ConfigurationProperties(prefix = "application")
+public class ApplicationProperties {
+    private String name;
+    private Integer version;
+    private boolean productionMode;
+
+    // Getters and setters
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
+    public boolean isProductionMode() {
+        return productionMode;
+    }
+
+    public void setProductionMode(boolean productionMode) {
+        this.productionMode = productionMode;
+    }
+}
+```
+
+---
+
+**Step 2**: Enable the Configuration Properties Class
+
+In your main application class (or any configuration class), use the `@EnableConfigurationProperties` annotation to register the `ApplicationProperties` class as a bean.
+
+```java
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+
+@SpringBootApplication
+@EnableConfigurationProperties(ApplicationProperties.class)
+public class TestApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(TestApplication.class, args);
+    }
+}
+```
+
+---
+
+**Step 3**: Define Properties in `application.properties` or `application.yml`
+
+Add the properties that match the fields in your `ApplicationProperties` class. Use the prefix you defined in the `@ConfigurationProperties` annotation.
+
+Example (`application.properties`):
+
+```properties
+application.name=MyApp
+application.version=1
+application.production-mode=true
+```
+
+---
+
+**Step 4**: Use the Configuration Properties Bean
+
+You can now inject the `ApplicationProperties` bean into any Spring-managed component and access the bound properties.
+
+```java
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class ConfigController {
+
+    private final ApplicationProperties applicationProperties;
+
+    public ConfigController(ApplicationProperties applicationProperties) {
+        this.applicationProperties = applicationProperties;
+    }
+
+    @GetMapping("/config")
+    public String getConfig() {
+        return "App Name: " + applicationProperties.getName() +
+               ", Version: " + applicationProperties.getVersion() +
+               ", Production Mode: " + applicationProperties.isProductionMode();
+    }
+}
+```
+
+---
+
+#### **2. Using `@Component` (Alternative Approach)**
+
+If you don't want to use `@EnableConfigurationProperties`, you can annotate the `@ConfigurationProperties` class with `@Component`. This will automatically register the class as a Spring bean.
+
+---
+
+**Step 1**: Modify the Configuration Properties Class
+
+Add the `@Component` annotation to the class.
+
+```java
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
+
+@Component
+@ConfigurationProperties(prefix = "application")
+public class ApplicationProperties {
+    private String name;
+    private Integer version;
+    private boolean productionMode;
+
+    // Getters and setters (same as above)
+}
+```
+
+---
+
+**Step 2**: Define Properties in `application.properties` or `application.yml`
+
+Add the properties as before.
+
+Example (`application.properties`):
+
+```properties
+application.name=MyApp
+application.version=1
+application.production-mode=true
+```
+
+---
+
+**Step 3**: Use the Configuration Properties Bean
+
+Inject the `ApplicationProperties` bean and use it as before.
+
+```java
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class ConfigController {
+
+    private final ApplicationProperties applicationProperties;
+
+    public ConfigController(ApplicationProperties applicationProperties) {
+        this.applicationProperties = applicationProperties;
+    }
+
+    @GetMapping("/config")
+    public String getConfig() {
+        return "App Name: " + applicationProperties.getName() +
+               ", Version: " + applicationProperties.getVersion() +
+               ", Production Mode: " + applicationProperties.isProductionMode();
+    }
+}
+```
+
+---
+
+### **Which Approach Should You Use?**
+
+- **Use `@EnableConfigurationProperties` (Recommended)**:
+  - Keeps the configuration class focused only on property binding.
+  - Provides better separation of concerns and modularity.
+  - Makes it explicit which classes are used for configuration.
+
+- **Use `@Component` (Alternative)**:
+  - Simpler for small applications or quick setups.
+  - May mix concerns, as the class becomes both a configuration class and a Spring component.
