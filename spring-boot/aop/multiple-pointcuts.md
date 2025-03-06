@@ -12,15 +12,15 @@ The code in the image demonstrates how to define **multiple pointcuts** and comb
 
 ##### **a. `pointcutServicePackage`**
 ```java
-@Pointcut("execution(* programmerzamannow.aop.service.*.*(..))")
+@Pointcut("execution(* com.aop.service.*.*(..))")
 public void pointcutServicePackage() {}
 ```
-- Matches all methods in any class within the `programmerzamannow.aop.service` package.
+- Matches all methods in any class within the `com.aop.service` package.
 - **Key Points**:
   - `execution`: Targets method execution.
-  - `* programmerzamannow.aop.service.*.*(..)`:
+  - `* com.aop.service.*.*(..)`:
     - `*`: Matches any return type.
-    - `programmerzamannow.aop.service.*`: Matches any class in the `service` package.
+    - `com.aop.service.*`: Matches any class in the `service` package.
     - `.*(..)`: Matches any method with any parameters.
 
 ---
@@ -59,14 +59,14 @@ public void pointcutMethodForCombination() {}
 ```
 - Combines the three pointcuts using the `&&` (AND) operator.
 - **Key Points**:
-  - `pointcutServicePackage()`: Ensures the method is in the `programmerzamannow.aop.service` package.
+  - `pointcutServicePackage()`: Ensures the method is in the `com.aop.service` package.
   - `pointcutServiceBean()`: Ensures the method belongs to a bean whose name ends with `Service`.
   - `pointcutPublicMethod()`: Ensures the method is public.
 
 The resulting pointcut will match:
 - Public methods,
 - In beans whose names end with `Service`,
-- And are in the `programmerzamannow.aop.service` package.
+- And are in the `com.aop.service` package.
 
 ---
 
@@ -79,7 +79,7 @@ The resulting pointcut will match:
 @Component
 public class LoggingAspect {
 
-    @Pointcut("execution(* programmerzamannow.aop.service.*.*(..))")
+    @Pointcut("execution(* com.aop.service.*.*(..))")
     public void pointcutServicePackage() {}
 
     @Pointcut("bean(*Service)")
@@ -104,12 +104,12 @@ public class LoggingAspect {
 
 1. **Pointcut Matching**:
    - The advice will run **only if all the following are true**:
-     - The method is in the `programmerzamannow.aop.service` package.
+     - The method is in the `com.aop.service` package.
      - The method belongs to a bean whose name ends with `Service`.
      - The method is public.
 
 2. **Example Scenario**:
-   - Bean: `userService` (in the `programmerzamannow.aop.service` package).
+   - Bean: `userService` (in the `com.aop.service` package).
    - Method: `public void getUser(String id)`.
 
    The advice will execute for this method because:
@@ -119,7 +119,7 @@ public class LoggingAspect {
 
 3. **Output**:
    ```
-   Executing: void programmerzamannow.aop.service.UserService.getUser(String)
+   Executing: void com.aop.service.UserService.getUser(String)
    ```
 
 ---
@@ -138,7 +138,7 @@ public class LoggingAspect {
 
 #### **Pointcut Example**
 ```java
-@Pointcut("execution(* programmerzamannow.aop.service.*.*(..))")
+@Pointcut("execution(* com.aop.service.*.*(..))")
 public void pointcutServicePackage() {}
 
 @Pointcut("bean(*Service)")
@@ -152,7 +152,7 @@ public void advancedPointcut() {}
 ```
 
 #### **Explanation**
-- Matches methods in the `programmerzamannow.aop.service` package.
+- Matches methods in the `com.aop.service` package.
 - Additionally:
   - The method must belong to a bean whose name ends with `Service`, **OR**
   - The method must **not** be public.
