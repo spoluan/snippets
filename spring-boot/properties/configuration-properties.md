@@ -145,3 +145,170 @@ public class ConfigController {
 4. **Document Your Properties**:
    - Provide clear documentation for custom configuration properties to help other developers understand their purpose.
 
+  
+### **Metadata Generation for Configuration Properties**
+
+When you compile your project with Maven (or any build tool that supports annotation processing), the `spring-boot-configuration-processor` generates a file called `spring-configuration-metadata.json`. This file contains metadata about your custom configuration properties, including their names, types, and descriptions (if provided).
+
+#### **Steps to Generate Metadata**
+
+1. Ensure the `spring-boot-configuration-processor` dependency is included in your `pom.xml`:
+
+   ```xml
+   <dependency>
+       <groupId>org.springframework.boot</groupId>
+       <artifactId>spring-boot-configuration-processor</artifactId>
+       <optional>true</optional>
+   </dependency>
+   ```
+
+2. Annotate your configuration properties class with `@ConfigurationProperties`.
+
+   Example:
+
+   ```java
+   @Getter
+   @Setter
+   @ConfigurationProperties("application")
+   public class ApplicationProperties {
+       private String name;           // Binds to application.name
+       private Integer version;       // Binds to application.version
+       private boolean productionMode; // Binds to application.productionMode
+   }
+   ```
+
+3. Build the project using Maven:
+
+   ```bash
+   mvn clean install
+   ```
+
+4. During the build process, the annotation processor generates the `spring-configuration-metadata.json` file in the `META-INF` directory of the compiled JAR.
+
+---
+
+### **Example Output: `spring-configuration-metadata.json`**
+
+After running the build, the following file will be generated in the `target/classes/META-INF` directory:
+
+```json
+{
+  "groups": [
+    {
+      "name": "application",
+      "type": "com.example.ApplicationProperties",
+      "sourceType": "com.example.ApplicationProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "application.name",
+      "type": "java.lang.String",
+      "description": "Name of the application.",
+      "sourceType": "com.example.ApplicationProperties"
+    },
+    {
+      "name": "application.version",
+      "type": "java.lang.Integer",
+      "description": "Version of the application.",
+      "sourceType": "com.example.ApplicationProperties"
+    },
+    {
+      "name": "application.production-mode",
+      "type": "java.lang.Boolean",
+      "description": "Whether the application is in production mode.",
+      "sourceType": "com.example.ApplicationProperties"
+    }
+  ]
+}
+```
+
+---
+
+### **Full Maven Build Output**
+
+Here’s what you might see when you build the project with Maven and the `spring-boot-configuration-processor` dependency included:
+
+```bash
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ----------------< com.example:configuration-demo >----------------
+[INFO] Building configuration-demo 1.0-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:3.1.0:clean (default-clean) @ configuration-demo ---
+[INFO] Deleting /path/to/project/target
+[INFO] 
+[INFO] --- maven-resources-plugin:3.2.0:resources (default-resources) @ configuration-demo ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.8.1:compile (default-compile) @ configuration-demo ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 3 source files to /path/to/project/target/classes
+[INFO] 
+[INFO] --- spring-boot-configuration-processor:2.7.5:process (process-configuration-metadata) @ configuration-demo ---
+[INFO] Processing additional configuration metadata...
+[INFO] Writing metadata to '/path/to/project/target/classes/META-INF/spring-configuration-metadata.json'
+[INFO] 
+[INFO] --- maven-resources-plugin:3.2.0:testResources (default-testResources) @ configuration-demo ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.8.1:testCompile (default-testCompile) @ configuration-demo ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 1 source file to /path/to/project/target/test-classes
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.22.2:test (default-test) @ configuration-demo ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:3.2.0:jar (default-jar) @ configuration-demo ---
+[INFO] Building jar: /path/to/project/target/configuration-demo-1.0-SNAPSHOT.jar
+[INFO] 
+[INFO] --- spring-boot-maven-plugin:2.7.5:repackage (repackage) @ configuration-demo ---
+[INFO] Replacing main artifact with repackaged archive
+[INFO] 
+[INFO] --- maven-install-plugin:2.5.2:install (default-install) @ configuration-demo ---
+[INFO] Installing /path/to/project/target/configuration-demo-1.0-SNAPSHOT.jar to /path/to/.m2/repository/com/example/configuration-demo/1.0-SNAPSHOT/configuration-demo-1.0-SNAPSHOT.jar
+[INFO] Installing /path/to/project/pom.xml to /path/to/.m2/repository/com/example/configuration-demo/1.0-SNAPSHOT/configuration-demo-1.0-SNAPSHOT.pom
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  4.876 s
+[INFO] Finished at: 2025-03-06T11:30:45+00:00
+[INFO] ------------------------------------------------------------------------
+```
+
+---
+
+### **Benefits of Metadata Generation**
+
+1. **IDE Autocompletion**:
+   - IDEs like IntelliJ or Eclipse can use the metadata to provide autocompletion for your custom properties in `application.properties` or `application.yml`.
+
+2. **Improved Documentation**:
+   - You can add descriptions to your configuration properties using the `@Description` annotation or Javadoc comments. These descriptions will appear in the metadata file and be visible in your IDE.
+
+   Example:
+
+   ```java
+   @Getter
+   @Setter
+   @ConfigurationProperties("application")
+   public class ApplicationProperties {
+       /**
+        * Name of the application.
+        */
+       private String name;
+
+       /**
+        * Version of the application.
+        */
+       private Integer version;
+
+       /**
+        * Whether the application is in production mode.
+        */
+       private boolean productionMode;
+   }
+   ```
