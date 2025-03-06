@@ -363,7 +363,7 @@ public class CustomAnnotationAspect {
 Suppose the `HelloService` class looks like this:
 
 ```java
-package programmerzamannow.aop.service;
+package com.aop.service;
 
 import org.springframework.stereotype.Service;
 
