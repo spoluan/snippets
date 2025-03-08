@@ -1,76 +1,103 @@
 ### **Spring Boot Banner**
 
-Spring Boot offers a **banner feature** that displays a custom ASCII art message or text in the console when the application starts. This feature is customizable, and you can replace the default banner with your own.
+Spring Boot provides a **banner feature** that displays a customizable ASCII art or text when the application starts. By default, Spring Boot includes a basic banner, but you can customize it to add your own branding or messages.
 
 ---
 
 ### **1. Default Spring Boot Banner**
 
-The default banner is displayed if no custom banner is provided. It looks like this:
+When no custom banner is provided, Spring Boot displays the following default banner in the console:
 
-```text
+```
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
 ( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
  \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
   '  |____| .__|_| |_|_| |_\__, | / / / /
  =========|_|==============|___/=/_/_/_/
- :: Spring Boot ::
+ :: Spring Boot ::                (vX.X.X)
 ```
+
+- **Explanation**:
+  - The version of Spring Boot being used is displayed in `(vX.X.X)`.
+  - This banner is automatically included if no custom banner is configured.
 
 ---
 
 ### **2. Customizing the Banner**
 
-You can replace the default banner with your own by creating a `banner.txt` file and placing it in the `resources` directory of your project.
+You can replace the default banner by creating a **`banner.txt`** file and placing it in the `resources` directory of your project.
 
-#### **Steps to Add a Custom Banner:**
-1. **Create a `banner.txt` File**:
-   - Create a new file named `banner.txt` in the `src/main/resources` directory.
-   - Add your desired ASCII art or text to this file.
-   
-2. **Example Custom Banner**:
-   ```text
-   ______                             _ _    ______      _                    
-  / _____)                           | (_)  (_____ \    | |                   
- ( (____  _____ _   _ _____ ____   __| |_    _____) )__ | | _   _ _____ ____  
-  \____ \| ___ | | | | ___ |  _ \ / _  | |  |  ____/ _ \| || | | (____ |  _ \ 
-  _____) ) ____|\ V /| ____| | | ( (_| | |  | |   | |_| | || |_| / ___ | | | |
- (______/|_____) \_/ |_____)_| |_|\____|_|  |_|    \___/ \_)____/\_____|_| |_|
+#### **Steps to Add a Custom Banner**:
+1. **Generate Your Banner**:
+   - Use an online ASCII art generator like [Bagill ASCII Signature Generator](https://bagill.com/ascii-sig.php) to create your custom banner.
+   - Example banner generated from the link:
+     ```
+       ______                             _ _    ______      _                    
+      / _____)                           | (_)  (_____ \    | |                   
+     ( (____  _____ _   _ _____ ____   __| |_    _____) )__ | | _   _ _____ ____  
+      \____ \| ___ | | | | ___ |  _ \ / _  | |  |  ____/ _ \| || | | (____ |  _ \ 
+      _____) ) ____|\ V /| ____| | | ( (_| | |  | |   | |_| | || |_| / ___ | | | |
+     (______/|_____) \_/ |_____)_| |_|\____|_|  |_|    \___/ \_)____/\_____|_| |_|
+                                                                                  
+     ```
+
+2. **Save the Banner**:
+   - Save the generated ASCII art as `banner.txt`.
+   - Place the file in the `src/main/resources` directory of your Spring Boot project.
+
+   **File Structure**:
+   ```
+   src/main/resources/
+   ├── application.properties
+   ├── banner.txt
    ```
 
 3. **Run the Application**:
-   - When you start your Spring Boot application, the banner in `banner.txt` will replace the default one.
+   - When the application starts, the content of `banner.txt` will be displayed in the console.
 
 ---
 
-### **3. Generating a Custom Banner**
+### **3. Disabling the Banner**
 
-To create a custom ASCII art banner, you can use online tools like [Bagill ASCII Art Generator](https://bagill.com/ascii-sig.php). 
+If you don't want any banner to be displayed, you can disable it in the `application.properties` file.
 
-#### **Steps to Generate a Custom Banner**:
-1. Open the [Bagill ASCII Art Generator](https://bagill.com/ascii-sig.php).
-2. Enter your desired text (e.g., your application name or slogan).
-3. Choose a font style and generate the ASCII art.
-4. Copy the generated ASCII art and paste it into the `banner.txt` file.
-
----
-
-### **4. Disabling the Banner**
-
-If you don't want any banner to be displayed, you can disable it in the `application.properties` file:
-
+#### **Configuration**:
 ```properties
 spring.main.banner-mode=off
 ```
 
 ---
 
-### **5. Modifying the Banner Programmatically**
+### **4. Using Variables in the Banner**
 
-You can also customize the banner programmatically by implementing the `org.springframework.boot.Banner` interface.
+Spring Boot allows you to include dynamic information (like application name, version, etc.) in the banner using placeholders.
 
-#### **Example Code**:
+#### **Supported Variables**:
+- **`${application.version}`**: Application version.
+- **`${application.formatted-version}`**: Formatted version.
+- **`${spring-boot.version}`**: Spring Boot version.
+- **`${spring.application.name}`**: Application name.
+
+#### **Example**:
+```txt
+  ____  _            _    _   _      _ _ 
+ | __ )| | ___   ___| | _| \ | | ___| | |
+ |  _ \| |/ _ \ / __| |/ /  \| |/ _ \ | |
+ | |_) | | (_) | (__|   <| |\  |  __/ | |
+ |____/|_|\___/ \___|_|\_\_| \_|\___|_|_|
+
+ :: Application Name :: ${spring.application.name}
+ :: Spring Boot Version :: ${spring-boot.version}
+```
+
+---
+
+### **5. Programmatically Modifying the Banner**
+
+If you want to set or modify the banner programmatically, you can do so using the `SpringApplication` class.
+
+#### **Code Example**:
 ```java
 import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
@@ -86,7 +113,7 @@ public class CustomBannerApplication {
         app.setBanner(new Banner() {
             @Override
             public void printBanner(Environment environment, Class<?> sourceClass, PrintStream out) {
-                out.println("Custom Banner: Welcome to My Application!");
+                out.println("Custom Programmatic Banner!");
             }
         });
         app.run(args);
@@ -96,35 +123,16 @@ public class CustomBannerApplication {
 
 ---
 
-### **6. Dynamic Banner Variables**
+### **6. Banner Modes**
 
-You can include Spring Boot placeholders in your `banner.txt` file to dynamically display application information like version, name, etc.
+Spring Boot provides three modes for the banner:
 
-#### **Supported Placeholders**:
-- `${application.version}`: Displays the application version.
-- `${application.formatted-version}`: Displays the formatted application version.
-- `${spring-boot.version}`: Displays the Spring Boot version.
+- **`console`** (default): Displays the banner in the console.
+- **`log`**: Displays the banner in the log file.
+- **`off`**: Disables the banner.
 
-#### **Example**:
-```text
-:: My Custom Application ::
-Version: ${application.version}
-Spring Boot Version: ${spring-boot.version}
+#### **Setting the Mode**:
+```properties
+spring.main.banner-mode=log
 ```
 
----
-
-### **7. Where to Modify the Banner**
-
-- **Default Location**: `src/main/resources/banner.txt`
-- **Configuration File**: Modify settings in `application.properties` or `application.yml`.
-
-#### **Properties for Banner Configuration**:
-- **Enable/Disable Banner**:
-  ```properties
-  spring.main.banner-mode=console  # Options: console, log, or off
-  ```
-- **Custom Banner File Location**:
-  ```properties
-  spring.banner.location=classpath:custom-banner.txt
-  ```
