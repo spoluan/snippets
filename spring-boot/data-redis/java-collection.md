@@ -44,16 +44,16 @@ RedisList is backed by the Redis **List** data structure. It supports operations
 void list() {
     // Create a RedisList and add elements
     List<String> list = RedisList.create("names", redisTemplate);
-    list.add("Eko");
-    list.add("Kurniawan");
-    list.add("Khannedy");
+    list.add("Sevendi");
+    list.add("Eldrige");
+    list.add("Rifki");
 
     // Retrieve elements from Redis using RedisTemplate
     List<String> names = redisTemplate.opsForList().range("names", 0, -1);
 
     // Assertions
-    assertThat(list, hasItems("Eko", "Kurniawan", "Khannedy"));
-    assertThat(names, hasItems("Eko", "Kurniawan", "Khannedy"));
+    assertThat(list, hasItems("Sevendi", "Eldrige", "Rifki"));
+    assertThat(names, hasItems("Sevendi", "Eldrige", "Rifki"));
 }
 ```
 
@@ -75,15 +75,15 @@ RedisSet is backed by the Redis **Set** data structure. It supports operations l
 void set() {
     // Create a RedisSet and add elements
     Set<String> set = RedisSet.create("traffic", redisTemplate);
-    set.addAll(Set.of("eko", "kurniawan", "khannedy"));
-    set.addAll(Set.of("eko", "budi", "rully"));
+    set.addAll(Set.of("Sevendi", "Eldrige", "Rifki"));
+    set.addAll(Set.of("Sevendi", "budi", "rully"));
 
     // Retrieve members from Redis using RedisTemplate
     Set<String> members = redisTemplate.opsForSet().members("traffic");
 
     // Assertions
-    assertThat(set, hasItems("eko", "kurniawan", "khannedy", "budi", "rully"));
-    assertThat(members, hasItems("eko", "kurniawan", "khannedy", "budi", "rully"));
+    assertThat(set, hasItems("Sevendi", "Eldrige", "Rifki", "budi", "rully"));
+    assertThat(members, hasItems("Sevendi", "Eldrige", "Rifki", "budi", "rully"));
 }
 ```
 
@@ -105,7 +105,7 @@ RedisZSet is backed by the Redis **Sorted Set** data structure. It supports oper
 void zset() {
     // Create a RedisZSet and add elements with scores
     RedisZSet<String> set = RedisZSet.create("winner", redisTemplate);
-    set.add("Eko", 100);
+    set.add("Sevendi", 100);
     set.add("Budi", 85);
     set.add("Joko", 95);
 
@@ -113,11 +113,11 @@ void zset() {
     Set<String> members = redisTemplate.opsForZSet().range("winner", 0, -1);
 
     // Assertions
-    assertThat(set, hasItems("Eko", "Budi", "Joko"));
-    assertThat(members, hasItems("Eko", "Budi", "Joko"));
+    assertThat(set, hasItems("Sevendi", "Budi", "Joko"));
+    assertThat(members, hasItems("Sevendi", "Budi", "Joko"));
 
     // Pop elements in reverse order
-    assertEquals("Eko", set.popLast());
+    assertEquals("Sevendi", set.popLast());
     assertEquals("Joko", set.popLast());
     assertEquals("Budi", set.popLast());
 }
@@ -142,16 +142,16 @@ RedisMap is backed by the Redis **Hash** data structure. It supports operations 
 void map() {
     // Create a RedisMap and add key-value pairs
     Map<String, String> map = new DefaultRedisMap<>("user:1", redisTemplate);
-    map.put("name", "Eko");
+    map.put("name", "Sevendi");
     map.put("address", "Indonesia");
 
     // Retrieve entries from Redis using RedisTemplate
     Map<Object, Object> user = redisTemplate.opsForHash().entries("user:1");
 
     // Assertions
-    assertThat(map, hasEntry("name", "Eko"));
+    assertThat(map, hasEntry("name", "Sevendi"));
     assertThat(map, hasEntry("address", "Indonesia"));
-    assertThat(user, hasEntry("name", "Eko"));
+    assertThat(user, hasEntry("name", "Sevendi"));
     assertThat(user, hasEntry("address", "Indonesia"));
 }
 ```
