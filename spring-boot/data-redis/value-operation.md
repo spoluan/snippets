@@ -115,8 +115,8 @@ public class ValueOperationTest {
         ValueOperations<String, String> operations = redisTemplate.opsForValue();
 
         // Set a value with a timeout of 2 seconds
-        operations.set("name", "Eko", java.time.Duration.ofSeconds(2));
-        assertEquals("Eko", operations.get("name")); // Verify the value is set correctly
+        operations.set("name", "Sevendi", java.time.Duration.ofSeconds(2));
+        assertEquals("Sevendi", operations.get("name")); // Verify the value is set correctly
 
         // Wait for 3 seconds to let the key expire
         Thread.sleep(3000);
