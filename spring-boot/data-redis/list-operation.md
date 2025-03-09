@@ -132,14 +132,14 @@ public class ListOperationTest {
         ListOperations<String, String> operations = redisTemplate.opsForList();
 
         // Push elements to the list
-        operations.rightPush("names", "Eko");
-        operations.rightPush("names", "Kurniawan");
-        operations.rightPush("names", "Khannedy");
+        operations.rightPush("names", "Sevendi");
+        operations.rightPush("names", "Eldrige");
+        operations.rightPush("names", "Rifki");
 
         // Pop elements from the list
-        assertEquals("Eko", operations.leftPop("names")); // First element
-        assertEquals("Kurniawan", operations.leftPop("names")); // Second element
-        assertEquals("Khannedy", operations.leftPop("names")); // Third element
+        assertEquals("Sevendi", operations.leftPop("names")); // First element
+        assertEquals("Eldrige", operations.leftPop("names")); // Second element
+        assertEquals("Rifki", operations.leftPop("names")); // Third element
     }
 }
 ```
