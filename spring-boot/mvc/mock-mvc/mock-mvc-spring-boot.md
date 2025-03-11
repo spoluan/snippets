@@ -137,14 +137,14 @@ public void testResponseContentType() throws Exception {
 
 To simplify the code, you can use static imports for utility methods. Here are the most common classes:
 
-1. **`MockMvcBuilders`**: For building `MockMvc` instances.
+1. **`MockMvcBuilder`**: For building `MockMvc` instances.
 2. **`MockMvcRequestBuilders`**: For creating HTTP requests (e.g., `get`, `post`).
 3. **`MockMvcResultMatchers`**: For verifying response properties (e.g., status, content).
 4. **`MockMvcResultHandlers`**: For handling results (e.g., logging).
 
 #### Example of Static Imports:
 ```java
-import static org.springframework.test.web.servlet.MockMvcBuilders.*;
+import static org.springframework.test.web.servlet.MockMvcBuilder.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
@@ -204,7 +204,7 @@ If you don't use `@AutoConfigureMockMvc`, you can manually create a `MockMvc` in
 
 #### Example:
 ```java
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilder;
 import org.springframework.web.context.WebApplicationContext;
 
 @Autowired
@@ -214,7 +214,7 @@ private MockMvc mockMvc;
 
 @BeforeEach
 public void setup() {
-    mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
+    mockMvc = MockMvcBuilder.webAppContextSetup(context).build();
 }
 ```
 
