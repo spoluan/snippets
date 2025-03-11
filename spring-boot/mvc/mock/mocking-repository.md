@@ -134,15 +134,15 @@ public class PersonServiceTest {
     @Test
     public void testGetSuccess() {
         // Arrange
-        Person person = new Person("eko", "Eko");
-        when(personRepository.selectById("eko")).thenReturn(person);
+        Person person = new Person("Sevendi", "Sevendi");
+        when(personRepository.selectById("Sevendi")).thenReturn(person);
 
         // Act
-        Person result = personService.get("eko");
+        Person result = personService.get("Sevendi");
 
         // Assert
-        assertEquals("eko", result.getId());
-        assertEquals("Eko", result.getName());
+        assertEquals("Sevendi", result.getId());
+        assertEquals("Sevendi", result.getName());
     }
 }
 ```
@@ -174,14 +174,14 @@ Mockito allows you to verify that a specific method was called on the mock.
 @Test
 public void testVerifyMethodCall() {
     // Arrange
-    Person person = new Person("eko", "Eko");
-    when(personRepository.selectById("eko")).thenReturn(person);
+    Person person = new Person("Sevendi", "Sevendi");
+    when(personRepository.selectById("Sevendi")).thenReturn(person);
 
     // Act
-    personService.get("eko");
+    personService.get("Sevendi");
 
     // Assert
-    verify(personRepository, times(1)).selectById("eko");
+    verify(personRepository, times(1)).selectById("Sevendi");
 }
 ```
 
@@ -197,14 +197,14 @@ import org.mockito.ArgumentCaptor;
 public void testArgumentCaptor() {
     // Arrange
     ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-    when(personRepository.selectById("eko")).thenReturn(new Person("eko", "Eko"));
+    when(personRepository.selectById("Sevendi")).thenReturn(new Person("Sevendi", "Sevendi"));
 
     // Act
-    personService.get("eko");
+    personService.get("Sevendi");
 
     // Assert
     verify(personRepository).selectById(captor.capture());
-    assertEquals("eko", captor.getValue());
+    assertEquals("Sevendi", captor.getValue());
 }
 ```
 
