@@ -41,9 +41,7 @@ Java provides specialized stream classes for primitive data types like `int`, `l
      - `IntStream.builder()`
 
 ---
-
-### **Code Example: Creating Primitive Streams**
-
+ 
 ```java
 @Test
 void testCreatePrimitiveStream() {
@@ -107,4 +105,77 @@ IntStream.range(1, 10)
 
 3. **Readable Code**:
    - Direct methods for common tasks like summing or finding averages make the code cleaner.
+  
+
+
+### **Example: Primitive Stream Operations**
+
+This code demonstrates two common operations on a primitive stream using `IntStream`.
+
+---
+
+### **Code**
+
+```java
+@Test
+void testPrimitiveStreamOperations() {
+    // Calculate the average of numbers from 1 to 9
+    OptionalDouble average = IntStream.range(1, 10).average();
+    
+    // Convert each integer to a String
+    Stream<String> stream = IntStream.range(1, 10)
+                                     .mapToObj(number -> String.valueOf(number));
+}
+```
+
+---
+
+### **Explanation**
+
+1. **Calculate Average**:
+   ```java
+   OptionalDouble average = IntStream.range(1, 10).average();
+   ```
+   - `IntStream.range(1, 10)` generates a stream of integers from `1` to `9` (inclusive of `1`, exclusive of `10`).
+   - `.average()` calculates the average of the numbers in the stream.
+   - The result is wrapped in an `OptionalDouble`, which safely handles the case when the stream is empty.
+
+   **Example Output**:
+   - If the range is `1 to 9`, the average is `5.0`.
+
+---
+
+2. **Convert Integers to Strings**:
+   ```java
+   Stream<String> stream = IntStream.range(1, 10)
+                                    .mapToObj(number -> String.valueOf(number));
+   ```
+   - `IntStream.range(1, 10)` creates a stream of integers from `1` to `9`.
+   - `.mapToObj(...)` converts each integer to its corresponding `String` representation using `String.valueOf(number)`.
+   - The result is a `Stream<String>`.
+
+   **Example Output**:
+   - If the range is `1 to 9`, the resulting stream contains: `["1", "2", "3", "4", "5", "6", "7", "8", "9"]`.
+
+---
+
+### **Key Methods Used**
+
+| **Method**                | **Description**                                                                 |
+|---------------------------|---------------------------------------------------------------------------------|
+| `IntStream.range(start, end)` | Creates a stream of integers starting from `start` (inclusive) to `end` (exclusive). |
+| `.average()`               | Calculates the average of the elements in the stream, returning an `OptionalDouble`. |
+| `.mapToObj(mapper)`        | Converts each primitive element in the stream to an object using the given mapper. |
+
+---
+
+### **Use Cases**
+
+1. **Calculating Statistics**:
+   - Use `.average()`, `.sum()`, `.max()`, etc., for quick calculations on primitive streams.
+
+2. **Transforming Data**:
+   - Convert primitive values to objects (e.g., `String`, `CustomObject`) using `.mapToObj()`.
+
+---
 
