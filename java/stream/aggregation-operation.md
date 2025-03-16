@@ -30,7 +30,7 @@ Here’s an example of how to use aggregate operations in Java Streams:
 ```java
 @Test
 void testAggregateOperations() {
-    List<String> names = List.of("Eko", "Kurniawan", "Khannedy", "Budi", "Nugraha", "Joko");
+    List<String> names = List.of("Sevendi", "Eldrigen", "Rifki", "Budi", "Nugraha", "Joko");
 
     // Find the maximum value based on natural order
     Optional<String> max = names.stream()
@@ -122,6 +122,6 @@ void testAggregateOperations() {
    ```java
    Optional<String> maxByLength = names.stream()
                                        .max(Comparator.comparingInt(String::length));
-   System.out.println(maxByLength.orElse("No value")); // Output: Kurniawan
+   System.out.println(maxByLength.orElse("No value")); // Output: Eldrigen
    ```
 
