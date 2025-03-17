@@ -153,8 +153,8 @@ public class RegisterTest {
 
     @Test
     void testWith() {
-        Register register1 = new Register("eko", "Eko");
-        Register register2 = register1.withUsername("khannedy");
+        Register register1 = new Register("Sevendi", "Sevendi");
+        Register register2 = register1.withUsername("Eldrige");
 
         Assertions.assertEquals(register1.getPassword(), register2.getPassword());
         Assertions.assertNotEquals(register1.getUsername(), register2.getUsername());
