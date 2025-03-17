@@ -37,7 +37,7 @@ public record Customer(String id, String name, String email, String phone) { }
 
 public class Main {
     public static void main(String[] args) {
-        Customer customer = new Customer("1", "Eko", "eko@localhost", "088888");
+        Customer customer = new Customer("1", "Sevendi", "Sevendi@localhost", "088888");
         System.out.println(customer);
     }
 }
@@ -45,7 +45,7 @@ public class Main {
 
 **Output:**
 ```
-Customer[id=1, name=Eko, email=eko@localhost, phone=088888]
+Customer[id=1, name=Sevendi, email=Sevendi@localhost, phone=088888]
 ```
 
 ---
@@ -73,7 +73,7 @@ Usage:
 public class Main {
     public static void main(String[] args) {
         try {
-            Customer customer = new Customer("1", "Eko", "invalid_email", "088888");
+            Customer customer = new Customer("1", "Sevendi", "invalid_email", "088888");
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
         }
@@ -111,7 +111,7 @@ Usage:
 ```java
 public class Main {
     public static void main(String[] args) {
-        Customer customer1 = new Customer("1", "Eko", "eko@localhost");
+        Customer customer1 = new Customer("1", "Sevendi", "Sevendi@localhost");
         Customer customer2 = new Customer("2", "Budi");
 
         System.out.println(customer1);
@@ -122,7 +122,7 @@ public class Main {
 
 **Output:**
 ```
-Customer[id=1, name=Eko, email=eko@localhost, phone=null]
+Customer[id=1, name=Sevendi, email=Sevendi@localhost, phone=null]
 Customer[id=2, name=Budi, email=null, phone=null]
 ```
 
@@ -138,26 +138,26 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CustomerTest {
     @Test
     void testPrimaryConstructor() {
-        Customer customer = new Customer("1", "Eko", "eko@localhost", "088888");
+        Customer customer = new Customer("1", "Sevendi", "Sevendi@localhost", "088888");
         assertEquals("1", customer.id());
-        assertEquals("Eko", customer.name());
-        assertEquals("eko@localhost", customer.email());
+        assertEquals("Sevendi", customer.name());
+        assertEquals("Sevendi@localhost", customer.email());
         assertEquals("088888", customer.phone());
     }
 
     @Test
     void testOverloadedConstructor() {
-        Customer customer = new Customer("1", "Eko", "eko@localhost");
+        Customer customer = new Customer("1", "Sevendi", "Sevendi@localhost");
         assertEquals("1", customer.id());
-        assertEquals("Eko", customer.name());
-        assertEquals("eko@localhost", customer.email());
+        assertEquals("Sevendi", customer.name());
+        assertEquals("Sevendi@localhost", customer.email());
         assertNull(customer.phone());
     }
 
     @Test
     void testCompactConstructorValidation() {
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            new Customer("", "Eko", "eko@localhost", "088888");
+            new Customer("", "Sevendi", "Sevendi@localhost", "088888");
         });
         assertEquals("ID cannot be null or blank", exception.getMessage());
     }
