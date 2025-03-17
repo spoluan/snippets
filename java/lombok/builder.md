@@ -91,7 +91,7 @@ public class Main {
     public static void main(String[] args) {
         Person person = Person.builder()
                               .id("123")
-                              .name("Eko")
+                              .name("Sevendi")
                               .age(25)
                               .hobbies(List.of("Coding", "Gaming", "Reading"))
                               .build();
@@ -103,7 +103,7 @@ public class Main {
 
 ##### **Output:**
 ```
-Person(id=123, name=Eko, age=25, hobbies=[Coding, Gaming, Reading])
+Person(id=123, name=Sevendi, age=25, hobbies=[Coding, Gaming, Reading])
 ```
 
 ---
