@@ -25,7 +25,7 @@ Java Records provide a concise way to define **immutable data objects**. Propert
    - For each property, a method with the same name as the property is automatically generated.
    - Example:
      ```java
-     Customer customer = new Customer("1", "Eko", "eko@localhost", "088888");
+     Customer customer = new Customer("1", "Sevendi", "Sevendi@localhost", "088888");
      System.out.println(customer.id());   // Accesses the "id" property
      System.out.println(customer.name()); // Accesses the "name" property
      ```
@@ -34,7 +34,7 @@ Java Records provide a concise way to define **immutable data objects**. Propert
    - The properties in the record header automatically become parameters of the primary constructor.
    - Example:
      ```java
-     var customer = new Customer("1", "Eko", "eko@localhost", "088888");
+     var customer = new Customer("1", "Sevendi", "Sevendi@localhost", "088888");
      ```
 
 6. **No Getters in Standard Form**:
@@ -56,7 +56,7 @@ public record Customer(String id, String name, String email, String phone) { }
 
 public class Main {
     public static void main(String[] args) {
-        Customer customer = new Customer("1", "Eko", "eko@localhost", "088888");
+        Customer customer = new Customer("1", "Sevendi", "Sevendi@localhost", "088888");
 
         // Accessing properties using generated methods
         System.out.println("ID: " + customer.id());
@@ -70,8 +70,8 @@ public class Main {
 **Output:**
 ```
 ID: 1
-Name: Eko
-Email: eko@localhost
+Name: Sevendi
+Email: Sevendi@localhost
 Phone: 088888
 ```
 
@@ -89,7 +89,7 @@ public record Customer(String id, String name, String email, String phone) { }
 public class Main {
     public static void main(String[] args) {
         // Creating a new record instance
-        Customer customer = new Customer("1", "Eko", "eko@localhost", "088888");
+        Customer customer = new Customer("1", "Sevendi", "Sevendi@localhost", "088888");
 
         System.out.println(customer);
     }
@@ -98,7 +98,7 @@ public class Main {
 
 **Output:**
 ```
-Customer[id=1, name=Eko, email=eko@localhost, phone=088888]
+Customer[id=1, name=Sevendi, email=Sevendi@localhost, phone=088888]
 ```
 
 ---
@@ -128,7 +128,7 @@ Usage:
 public class Main {
     public static void main(String[] args) {
         try {
-            Customer customer = new Customer("", "Eko", "invalid_email", "088888");
+            Customer customer = new Customer("", "Sevendi", "invalid_email", "088888");
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
         }
@@ -194,11 +194,11 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CustomerTest {
     @Test
     void testCustomerProperties() {
-        Customer customer = new Customer("1", "Eko", "eko@localhost", "088888");
+        Customer customer = new Customer("1", "Sevendi", "Sevendi@localhost", "088888");
 
         assertEquals("1", customer.id());
-        assertEquals("Eko", customer.name());
-        assertEquals("eko@localhost", customer.email());
+        assertEquals("Sevendi", customer.name());
+        assertEquals("Sevendi@localhost", customer.email());
         assertEquals("088888", customer.phone());
     }
 }
